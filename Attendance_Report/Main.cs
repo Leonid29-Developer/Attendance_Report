@@ -40,8 +40,7 @@ namespace Attendance_Report
                 CB_Group.Text = DATA_Temp1.Rows[0].Cells[0].Value.ToString(); CB_Student.Items.Add("Все"); CB_Student.Items.Add("Я"); CB_Student.Text = "Я";
 
                 // Получение данных о зафиксированных датах
-                string SQL = $"SELECT DISTINCT [FixedWeeks].[DateStartFixed],[FixedWeeks].[DateEndFixed] FROM [Attendance_Report].[dbo].[FixedWeeks],[Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students]" +
-                    $"WHERE[AccessRights].[Login] = '{Login}' AND[Students].[ID] = [AccessRights].[UniqueData] AND [FixedWeeks].[Group] = [Students].[Group]";
+                string SQL = $"SELECT DISTINCT [FixedWeeks].[DateStartFixed],[FixedWeeks].[DateEndFixed] FROM [Attendance_Report].[dbo].[FixedWeeks],[Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students] WHERE[AccessRights].[Login] = '{Login}' AND[Students].[ID] = [AccessRights].[UniqueData] AND [FixedWeeks].[Group] = [Students].[Group]";
                 SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp3.DataSource = Set.Tables["[]"].DefaultView;
 
                 for (int I1 = 0; I1 < DATA_Temp3.RowCount - 1; I1++) { DateTime ND = ConvertToDateTime(DATA_Temp3.Rows[I1].Cells[0].Value.ToString(), true); }
@@ -71,16 +70,14 @@ namespace Attendance_Report
         private void UpdateData()
         {
             // Получение данных
-            string SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name], [AttendanceTracking].[Student], [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number], [AttendanceTracking].[AttendanceMark]" +
-                $"FROM[Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking]" +
+            string SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name], [AttendanceTracking].[Student], [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number], [AttendanceTracking].[AttendanceMark] FROM[Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking]" +
                 $"WHERE[AccessRights].[Login] = '{Login}' AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group] AND [AttendanceTracking].[Student] {WHERE}";
             SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
             if (DATA_Temp1.RowCount - 1 == 0)
             {
                 // Повторное получение данных
-                SQL = $"SELECT  DISTINCT [Groups].[Group] AS [Group Name],  [AttendanceTracking].[Student], '' AS [Date], '' AS [Class Number], '' AS [Subject], '' AS [AttendanceMark] " +
-                    $"FROM  [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Groups],[Attendance_Report].[dbo].[AttendanceTracking]" +
+                SQL = $"SELECT  DISTINCT [Groups].[Group] AS [Group Name],  [AttendanceTracking].[Student], '' AS [Date], '' AS [Class Number], '' AS [AttendanceMark] FROM  [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Groups],[Attendance_Report].[dbo].[AttendanceTracking]" +
                     $"WHERE [AccessRights].[Login] = '{Login}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group] AND [AttendanceTracking].[Student] {WHERE}";
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
             }
@@ -92,26 +89,19 @@ namespace Attendance_Report
 
                 Panel Heading = new Panel { Size = new Size(Table.Width, 120), Name = "Heading" };
                 {
-                    Label Lab_Name = new Label { AutoSize = false, Size = new Size(300, Heading.Height), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Text = "Фамилия   Имя   Отчество" };
-                    Heading.Controls.Add(Lab_Name);
+                    Label Lab_Name = new Label { AutoSize = false, Size = new Size(300, Heading.Height), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Text = "Фамилия   Имя   Отчество" }; Heading.Controls.Add(Lab_Name);
 
                     string[] Days = { "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота" };
 
-                    for (int I1 = 0; I1 < 6; I1++)
-                    {
-                        Label Lab_Day = new Label { AutoSize = false, Size = new Size(160, 40), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Text = Days[I1], Left = 300 + 160 * I1 };
-                        Heading.Controls.Add(Lab_Day);
-                    }
+                    for (int I1 = 0; I1 < 6; I1++) { Label Lab_Day = new Label { AutoSize = false, Size = new Size(160, 40), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Text = Days[I1], Left = 300 + 160 * I1 }; Heading.Controls.Add(Lab_Day); }
 
                     // Получение данных
-                    SQL = $"SELECT DISTINCT [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number], [AttendanceTracking].[Subject]" +
-                        $"FROM [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[Students]" +
-                        $"WHERE [AccessRights].[Login] = '{Login}' AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group]";
+                    SQL = $"SELECT DISTINCT [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number],  (SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects], [Attendance_Report].[dbo].[Lessons] WHERE [Subjects].[ID] = [Lessons].[Subject] AND [Lessons].[Date] = [AttendanceTracking].[Date] AND [Lessons].[ClassNumber] = [AttendanceTracking].[ClassNumber]) AS [Subject]" +
+                        $"FROM [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[Students] WHERE [AccessRights].[Login] = '{Login}' AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group]";
                     data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp2.DataSource = Set.Tables["[]"].DefaultView;
 
                     // Получение данных
-                    SQL = $"SELECT DISTINCT [Weekend].[Date] FROM [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Weekend]" +
-                        $"WHERE [AccessRights].[Login] = '{Login}' AND [Weekend].[Date] >= '{Date}' AND [Weekend].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Weekend].[Group] = [Students].[Group]";
+                    SQL = $"SELECT DISTINCT [Weekend].[Date] FROM [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Weekend] WHERE [AccessRights].[Login] = '{Login}' AND [Weekend].[Date] >= '{Date}' AND [Weekend].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Weekend].[Group] = [Students].[Group]";
                     data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp3.DataSource = Set.Tables["[]"].DefaultView;
 
                     for (int I1 = 0, I4 = 0, I5 = 0; I1 < 6; I1++)
@@ -188,10 +178,12 @@ namespace Attendance_Report
                         case "Elder":
                             {
                                 ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog();  if (ValueEditor.Link.Name == "Weekend") UpdateData();
-                            if (ValueEditor.Link.Name == "Subject") if (ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] == '1') UpdateData(); else ValueEditor.Link.Paint += Label_Paint;
+                            if (ValueEditor.Link.Name == "Subject") if (ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] == '1') UpdateData();  else ValueEditor.Link.Paint += Label_Paint;
                         }
                             break;
                     }
+
+            SaveData();
         }
 
         private void Label_Paint(object sender, PaintEventArgs e)
@@ -224,18 +216,31 @@ namespace Attendance_Report
             {
                 switch (A.Name[0])
                 {
-                    case 'H': break;
-                    case 'M':
+                    case 'H':
                         {
-                            foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "AM")
+                            foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "Subject")
                                 {
-                                    //MessageBox.Show(B.Tag.ToString());
+                                    MessageBox.Show(B.Tag.ToString());
 
                                     string[] Data_Lab = B.Tag.ToString().Split('_');
 
                                     if (Data_Lab.Length == 5)
                                     {
-                                        string Request, SQL = $"SELECT* FROM[Attendance_Report].[dbo].[AttendanceTracking] WHERE[AttendanceTracking].[Student] = '{Data_Lab[1]}' AND[AttendanceTracking].[Date] = '{Data_Lab[2]}' AND[AttendanceTracking].[ClassNumber] = '{Data_Lab[3]}'";
+
+                                    }
+                                }
+                        }
+                        break;
+
+                    case 'M':
+                        {
+                            foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "AM")
+                                {
+                                    string[] Data_Lab = B.Tag.ToString().Split('_');
+
+                                    if (Data_Lab.Length == 5)
+                                    {
+                                        string Request, SQL = $"SELECT * FROM [Attendance_Report].[dbo].[AttendanceTracking] WHERE [AttendanceTracking].[Student] = '{Data_Lab[1]}' AND [AttendanceTracking].[Date] = '{Data_Lab[2]}' AND [AttendanceTracking].[ClassNumber] = '{Data_Lab[3]}'";
                                         SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
                                         if (DATA_Temp1.RowCount - 1 == 0)
