@@ -224,13 +224,26 @@ namespace Attendance_Report
             {
                 switch (A.Name[0])
                 {
-                    case 'H': break;
+                    case 'H':
+                        {
+                            foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "Subject")
+                                {
+                                    MessageBox.Show(B.Tag.ToString());
+
+                                    string[] Data_Lab = B.Tag.ToString().Split('_');
+
+                                    if (Data_Lab.Length == 5)
+                                    {
+
+                                    }
+                                }
+                        }
+                        break;
+
                     case 'M':
                         {
                             foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "AM")
                                 {
-                                    //MessageBox.Show(B.Tag.ToString());
-
                                     string[] Data_Lab = B.Tag.ToString().Split('_');
 
                                     if (Data_Lab.Length == 5)
