@@ -33,12 +33,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.TB_Password = new System.Windows.Forms.TextBox();
-            this.Button_Input = new System.Windows.Forms.Button();
             this.DATA = new System.Windows.Forms.DataGridView();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.Button_Input = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DATA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
@@ -99,18 +99,6 @@
             this.TB_Password.Size = new System.Drawing.Size(184, 26);
             this.TB_Password.TabIndex = 3;
             // 
-            // Button_Input
-            // 
-            this.Button_Input.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Button_Input.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Button_Input.Location = new System.Drawing.Point(78, 350);
-            this.Button_Input.Name = "Button_Input";
-            this.Button_Input.Size = new System.Drawing.Size(184, 32);
-            this.Button_Input.TabIndex = 5;
-            this.Button_Input.Text = "Войти";
-            this.Button_Input.UseVisualStyleBackColor = true;
-            this.Button_Input.Click += new System.EventHandler(this.Button_Input_Click);
-            // 
             // DATA
             // 
             this.DATA.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -154,6 +142,20 @@
             this.pictureBox3.TabIndex = 10;
             this.pictureBox3.TabStop = false;
             // 
+            // Button_Input
+            // 
+            this.Button_Input.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.Button_Input.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.Button_Input.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Button_Input.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Button_Input.Location = new System.Drawing.Point(78, 350);
+            this.Button_Input.Name = "Button_Input";
+            this.Button_Input.Size = new System.Drawing.Size(184, 35);
+            this.Button_Input.TabIndex = 11;
+            this.Button_Input.Text = "Войти";
+            this.Button_Input.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Button_Input.Click += new System.EventHandler(this.Button_Input_Click);
+            // 
             // Authorization
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -164,12 +166,12 @@
             this.Controls.Add(this.pictureBox4);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.DATA);
-            this.Controls.Add(this.Button_Input);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.TB_Password);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.TB_Login);
             this.Controls.Add(this.label1);
+            this.Controls.Add(this.Button_Input);
             this.Name = "Authorization";
             ((System.ComponentModel.ISupportInitialize)(this.DATA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -188,12 +190,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox TB_Password;
-        private System.Windows.Forms.Button Button_Input;
         private System.Windows.Forms.DataGridView DATA;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox4;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.Label Button_Input;
     }
 }
 
