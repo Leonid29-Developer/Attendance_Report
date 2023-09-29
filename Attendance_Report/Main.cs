@@ -82,6 +82,8 @@ namespace Attendance_Report
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
             }
 
+            //LogForm.DG = DATA_Temp1; new LogForm().Show();
+
             // Заполнение данными
             {
                 // Очистка таблицы-вывод
@@ -96,8 +98,8 @@ namespace Attendance_Report
                     for (int I1 = 0; I1 < 6; I1++) { Label Lab_Day = new Label { AutoSize = false, Size = new Size(160, 40), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Text = Days[I1], Left = 300 + 160 * I1 }; Heading.Controls.Add(Lab_Day); }
 
                     // Получение данных
-                    SQL = $"SELECT DISTINCT [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number],  (SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects], [Attendance_Report].[dbo].[Lessons] WHERE [Subjects].[ID] = [Lessons].[Subject] AND [Lessons].[Date] = [AttendanceTracking].[Date] AND [Lessons].[ClassNumber] = [AttendanceTracking].[ClassNumber]) AS [Subject]" +
-                        $"FROM [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[Students] WHERE [AccessRights].[Login] = '{Login}' AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group]";
+                    SQL = $"SELECT DISTINCT [Lessons].[Date], [Lessons].[ClassNumber],  (SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects] WHERE [Subjects].[ID] = [Lessons].[Subject]) AS [Subject] FROM [Attendance_Report].[dbo].[Lessons], [Attendance_Report].[dbo].[AccessRights], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[Students] " +
+                        $"WHERE [AccessRights].[Login] = '{Login}' AND [Lessons].[Date] >= '{Date}' AND [Lessons].[Date] <= '{Date.AddDays(5)}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [Groups].[ID] = [Students].[Group]";
                     data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp2.DataSource = Set.Tables["[]"].DefaultView;
 
                     // Получение данных
@@ -111,7 +113,7 @@ namespace Attendance_Report
                         {
                             if (DATA_Temp3.Rows[I5].Cells[0].Value.ToString() == Date.AddDays(I1).ToString())
                             {
-                                Label Lab_Class = new Label { Name = "Weekend",Tag = "Week_"+ Date.AddDays(I1) +"_"+CB_Group.Text, AutoSize = false, Size = new Size(160, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Left = 300 + 160 * I1, Top = 40, Text = "Выходной" };
+                                Label Lab_Class = new Label { Name = "Weekend", Tag = "Week_" + Date.AddDays(I1) + "_" + CB_Group.Text, AutoSize = false, Size = new Size(160, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Left = 300 + 160 * I1, Top = 40, Text = "Выходной" };
                                 Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class); I5++;
                             }
                             else T = false;
@@ -120,9 +122,9 @@ namespace Attendance_Report
 
                         if (T == false) for (int I2 = 0; I2 < 4; I2++)
                             {
-                                Label Lab_Class = new Label { Name = "Subject", Tag = "Sub_"+CB_Group.Text+ "_"+Date.AddDays(I1)  + "_" + I2, AutoSize = false, Size = new Size(40, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Left = 300 + 160 * I1 + I2 * 40, Top = 40 };
+                                Label Lab_Class = new Label { Name = "Subject", Tag = "Sub_" + CB_Group.Text + "_" + Date.AddDays(I1) + "_" + (I2+1), AutoSize = false, Size = new Size(40, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Left = 300 + 160 * I1 + I2 * 40, Top = 40 };
 
-                                if (DATA_Temp2.RowCount - I4 - 1 > 0) if (DATA_Temp2.Rows[I4].Cells[0].Value.ToString() == Date.AddDays(I1).ToString()) if (DATA_Temp2.Rows[I4].Cells[1].Value.ToString() == (I2 + 1).ToString()) 
+                                if (DATA_Temp2.RowCount - I4 - 1 > 0) if (DATA_Temp2.Rows[I4].Cells[0].Value.ToString() == Date.AddDays(I1).ToString()) if (DATA_Temp2.Rows[I4].Cells[1].Value.ToString() == (I2 + 1).ToString())
                                         { Lab_Class.Tag += "_" + DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); Lab_Class.Text = DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); I4++; Lab_Class.Paint += Label_Paint; new System.Windows.Forms.ToolTip().SetToolTip(Lab_Class, Lab_Class.Text); }
 
                                 Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class);
@@ -140,7 +142,7 @@ namespace Attendance_Report
 
                 for (int I1 = 0; I1 < Count_Student; I1++)
                 {
-                    Panel MainPal = new Panel { Size = new Size(Table.Width, 40), Name = ("Main_" + I1+1) };
+                    Panel MainPal = new Panel { Size = new Size(Table.Width, 40), Name = ("Main_" + I1 + 1) };
                     {
                         int Fixed_Count = (DATA_Temp1.RowCount - 1) / Count_Student;
 
@@ -155,15 +157,15 @@ namespace Attendance_Report
                         }
 
                         for (int I2 = 0, I4 = 0, I5 = 0; I2 < 6; I2++) for (int I3 = 0; I3 < 4; I3++, I4++)
-                        {
-                            Label Lab = new Label { Name = "AM", AutoSize = false, Size = new Size(40, MainPal.Height), Font = new Font("Times New Roman", 14), TextAlign = ContentAlignment.MiddleCenter, Text = "", Left = 300 + 40 * I4, BorderStyle = BorderStyle.FixedSingle };
-                            Lab.Click += new EventHandler(Label_Click); Lab.Tag = "AM_" + DATA_Temp1.Rows[I1 * Fixed_Count].Cells[1].Value + "_" + Date.AddDays(I2) + "_" + (I3 + 1);
+                            {
+                                Label Lab = new Label { Name = "AM", Text = ".", AutoSize = false, Size = new Size(40, MainPal.Height), Font = new Font("Times New Roman", 10), TextAlign = ContentAlignment.MiddleCenter, Left = 300 + 40 * I4, BorderStyle = BorderStyle.FixedSingle };
+                                Lab.Click += new EventHandler(Label_Click); Lab.Tag = "AM_" + DATA_Temp1.Rows[I1 * Fixed_Count].Cells[1].Value + "_" + Date.AddDays(I2) + "_" + (I3 + 1);
 
-                            if (Fixed_Count - I5 > 0) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[2].Value.ToString() == Date.AddDays(I2).ToString()) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[3].Value.ToString() == (I3 + 1).ToString())
-                                    { Lab.Text = AttendanceMarks(DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value.ToString()); Lab.Tag += "_" + DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value; I5++; }
+                                if (Fixed_Count - I5 > 0) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[2].Value.ToString() == Date.AddDays(I2).ToString()) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[3].Value.ToString() == (I3 + 1).ToString())
+                                        { Lab.Font = new Font("Times New Roman", 10);  Lab.Text = AttendanceMarks(DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value.ToString()); Lab.Tag += "_" + DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value; I5++; }
 
-                            MainPal.Controls.Add(Lab);
-                        }
+                                MainPal.Controls.Add(Lab);
+                            }
 
                         Table.Controls.Add(MainPal);
                     }
@@ -174,14 +176,14 @@ namespace Attendance_Report
         private void Label_Click(object sender, EventArgs e)
         {
             if (Date <= DateTime.Now & DateTime.Now <= Date.AddDays(7)) switch (AccessRights)
-                    {
-                        case "Elder":
-                            {
-                                ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog();  if (ValueEditor.Link.Name == "Weekend") UpdateData();
-                            if (ValueEditor.Link.Name == "Subject") if (ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] == '1') UpdateData();  else ValueEditor.Link.Paint += Label_Paint;
+                {
+                    case "Elder":
+                        {
+                            ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog(); if (ValueEditor.Link.Name == "Weekend") UpdateData();
+                            if (ValueEditor.Link.Name == "Subject") if (ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] == '1') UpdateData(); else ValueEditor.Link.Paint += Label_Paint;
                         }
-                            break;
-                    }
+                        break;
+                }
 
             SaveData();
         }
@@ -206,12 +208,10 @@ namespace Attendance_Report
             }
         }
 
-        private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData();  Application.OpenForms["Authorization"].Show(); }
+        private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData(); MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information); Application.OpenForms["Authorization"].Show(); }
 
         private void SaveData()
         {
-            bool T = false;
-
             foreach (var A in Table.Controls.OfType<Panel>().ToList())
             {
                 switch (A.Name[0])
@@ -220,13 +220,25 @@ namespace Attendance_Report
                         {
                             foreach (var B in A.Controls.OfType<Label>().ToList()) if (B.Name == "Subject")
                                 {
-                                    MessageBox.Show(B.Tag.ToString());
-
                                     string[] Data_Lab = B.Tag.ToString().Split('_');
 
                                     if (Data_Lab.Length == 5)
                                     {
+                                        string Request, SQL = $"SELECT * FROM [Attendance_Report].[dbo].[Lessons] WHERE [Date] = '{Data_Lab[2]}' AND [Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].Groups WHERE [Group] = '{Data_Lab[1]}') AND [ClassNumber] = '{Data_Lab[3]}'";
+                                        SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
+                                        if (DATA_Temp1.RowCount - 1 == 0)
+                                        {
+                                            SQL = $"SELECT TOP 1 [Lessons].[ID] FROM [Attendance_Report].[dbo].[Lessons] ORDER BY [ID] DESC"; string Temp1 = "";
+                                            data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
+                                            for (int I1 = 1; I1 < DATA_Temp1.Rows[0].Cells[0].Value.ToString().Length; I1++) { Temp1 += DATA_Temp1.Rows[0].Cells[0].Value.ToString()[I1]; }
+                                            Temp1 = "L" + (Convert.ToInt16(Temp1) + 1);
+
+                                            Request = $"INSERT INTO [Attendance_Report].[dbo].[Lessons]([ID],[Date],[Group],[ClassNumber],[Subject]) VALUES ('{Temp1}','{Data_Lab[2]}',(SELECT [ID] FROM [Attendance_Report].[dbo].Groups WHERE [Group] = '{Data_Lab[1]}'),'{Data_Lab[3]}', (SELECT [ID] FROM [Attendance_Report].[dbo].[Subjects] WHERE [Subject] = '{Data_Lab[4]}'))";
+                                        }
+                                        else Request = $"UPDATE [Attendance_Report].[dbo].[Lessons] SET [Lessons].[Subject] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Subjects] WHERE [Subject] = '{Data_Lab[4]}') WHERE [Date] = '{Data_Lab[2]}' AND [Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].Groups WHERE [Group] = '{Data_Lab[1]}') AND [ClassNumber] = '{Data_Lab[3]}'";
+
+                                        SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                                     }
                                 }
                         }
@@ -257,14 +269,10 @@ namespace Attendance_Report
                                         SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                                     }
                                 }
-
-                            T = true;
                         }
                         break;
                 }
             }
-            
-            if (T==true) MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         // Временно
