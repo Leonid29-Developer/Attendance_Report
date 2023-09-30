@@ -33,18 +33,25 @@ namespace Attendance_Report
                         Height = 362; Panel Panel_Week = new Panel { Size = new Size(Table.Width - 6, 110) };
                         {
                             Label Lab1 = new Label { Size = new Size(Panel_Week.Width, Panel_Week.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Установить выходной" };
-                            { Lab1.Tag = "ADD"; Lab1.Click += Label_Click; Panel_Week.Controls.Add(Lab1); } Table.Controls.Add(Panel_Week);
+                            { Lab1.Tag = "ADD"; Lab1.Click += Label_Click; Panel_Week.Controls.Add(Lab1); }
+                            Table.Controls.Add(Panel_Week);
                         }
 
-                        Panel Panel_Main = new Panel {Name="Main", Size = new Size(Table.Width - 6, 200), BorderStyle = BorderStyle.FixedSingle };
+                        Panel Panel_Main = new Panel { Name = "Main", Size = new Size(Table.Width - 6, 200), BorderStyle = BorderStyle.FixedSingle };
                         {
                             Label Lab1 = new Label { Size = new Size(Panel_Main.Width, 80), TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Times New Roman", 14), Text = "Введите наименование предмета", Top = 10 };
                             { Panel_Main.Controls.Add(Lab1); }
 
-                            TextBox TB = new TextBox { Name = "TB_Class", Size = new Size(Table.Width - 26, 40), Anchor = AnchorStyles.None, Font = new Font("Times New Roman", 14), Left = 12, Top = 96 }; Panel_Main.Controls.Add(TB);
+                            ComboBox CB = new ComboBox { Name = "TB_Class", Size = new Size(Table.Width - 26, 40), Anchor = AnchorStyles.None, Font = new Font("Times New Roman", 14), Left = 12, Top = 96 };
+
+                            string SQL = $"SELECT [Subject] FROM [Attendance_Report].[dbo].[Subjects]";
+                            SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
+
+                            for (int i = 0; i < DATA.RowCount - 1; i++) CB.Items.Add(DATA.Rows[i].Cells[0].Value); Panel_Main.Controls.Add(CB);
 
                             Label End = new Label { Size = new Size(150, 40), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12), Text = "Установить предмет", Left = Panel_Main.Width / 2 - 75, Top = 143 };
-                            { End.Tag = "Class"; End.Click += Label_Click; Panel_Main.Controls.Add(End); } Table.Controls.Add(Panel_Main);
+                            { End.Tag = "Class"; End.Click += Label_Click; Panel_Main.Controls.Add(End); }
+                            Table.Controls.Add(Panel_Main);
                         }
                     }
                     break;
@@ -58,7 +65,8 @@ namespace Attendance_Report
                             Height = 120; Panel Panel_Main = new Panel { Size = new Size(Table.Width - 6, Table.Height - 6) };
                             {
                                 Label Lab1 = new Label { Size = new Size(Panel_Main.Width, Panel_Main.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Убрать выходной" };
-                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); } Table.Controls.Add(Panel_Main);
+                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); }
+                                Table.Controls.Add(Panel_Main);
                             }
                         }
                         else Close();
@@ -95,7 +103,8 @@ namespace Attendance_Report
                         {
                             string Request, SQL = $"SELECT TOP 1 [Weekend].[ID] FROM [Attendance_Report].[dbo].[Weekend] ORDER BY [ID] DESC"; string Temp1 = ""; Link.Name = "Subject1";
                             SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
-                            for (int I1 = 1; I1 < DATA.Rows[0].Cells[0].Value.ToString().Length; I1++) { Temp1 += DATA.Rows[0].Cells[0].Value.ToString()[I1]; } Temp1 = "W" + (Convert.ToInt16(Temp1) + 1);
+                            for (int I1 = 1; I1 < DATA.Rows[0].Cells[0].Value.ToString().Length; I1++) { Temp1 += DATA.Rows[0].Cells[0].Value.ToString()[I1]; }
+                            Temp1 = "W" + (Convert.ToInt16(Temp1) + 1);
 
                             Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))"; Link.Name = "Weekend";
                             SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
@@ -106,7 +115,8 @@ namespace Attendance_Report
                             string SQL = $"SELECT DISTINCT [Weekend].[Date],[Weekend].[Group] FROM[Attendance_Report].[dbo].[Weekend], [Attendance_Report].[dbo].[Students] WHERE [Students].[Student] = '{Data[1]}' AND [Weekend].[Group] = [Students].[Group] AND [Weekend].[Date] = '{Data[2]}'";
                             SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
 
-                            if ((DATA.RowCount - 1) == 0) foreach (var A in Table.Controls.OfType<Panel>().ToList()) if (A.Name == "Main") foreach (var B in A.Controls.OfType<TextBox>().ToList()) { Link.Tag = Data[0] + "_" + Data[1] + "_" + Data[2] + "_" + Data[3] +"_"+ B.Text; Link.Text = B.Text; }
+                            if ((DATA.RowCount - 1) == 0) foreach (var A in Table.Controls.OfType<Panel>().ToList()) if (A.Name == "Main") foreach (var B in A.Controls.OfType<ComboBox>().ToList())
+                                            if (B.Text != "") { Link.Tag = Data[0] + "_" + Data[1] + "_" + Data[2] + "_" + Data[3] + "_" + B.Text; Link.Text = B.Text; } else MessageBox.Show("Данные не были выбраны", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     break;
@@ -123,7 +133,7 @@ namespace Attendance_Report
                 case "Week":
                     {
                         string Request = $"DELETE FROM [Attendance_Report].[dbo].[Weekend] WHERE [Weekend].[Group] = (SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{Data[2]}') AND [Weekend].[Date] = '{Data[1]}'";
-                        SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close(); 
+                        SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                     }
                     break;
             }
