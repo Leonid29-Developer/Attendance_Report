@@ -54,14 +54,15 @@ namespace Attendance_Report
         private void UpdateData()
         {
             // Получение данных
-            string SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name], [AttendanceTracking].[Student], [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number], [AttendanceTracking].[AttendanceMark] FROM [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking]{ChRequest_FROM} " +
-            $"WHERE [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}' AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}'{ChRequest_WHERE}";
+            string SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name], [AttendanceTracking].[Student], [AttendanceTracking].[Date], [AttendanceTracking].[ClassNumber] AS [Class Number], [AttendanceTracking].[AttendanceMark] FROM [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[Students]{ChRequest_FROM} " +
+            $"WHERE [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}' AND [AttendanceTracking].[Student] = [Students].[Student] AND [Students].[Group] = [Groups].[ID] AND [AttendanceTracking].[Date] >= '{Date}' AND [AttendanceTracking].[Date] <= '{Date.AddDays(5)}'{ChRequest_WHERE}";
             SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
             if (DATA_Temp1.RowCount - 1 == 0)
             {
                 // Повторное получение данных
-                SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name],  [AttendanceTracking].[Student], '' AS [Date], '' AS [Class Number], '' AS [AttendanceMark] FROM [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking]{ChRequest_FROM} WHERE [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}'{ChRequest_WHERE}";
+                SQL = $"SELECT DISTINCT [Groups].[Group] AS [Group Name],  [AttendanceTracking].[Student], '' AS [Date], '' AS [Class Number], '' AS [AttendanceMark] FROM [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[Students]{ChRequest_FROM}" +
+                    $"WHERE [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}' AND [AttendanceTracking].[Student] = [Students].[Student] AND [Students].[Group] = [Groups].[ID]{ChRequest_WHERE}";
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
             }
 
@@ -119,7 +120,7 @@ namespace Attendance_Report
                 SQL = $"SELECT DISTINCT [Students].[Student] FROM [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[Groups] WHERE [Students].[Group] = [Groups].[ID] AND [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}'";
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp2.DataSource = Set.Tables["[]"].DefaultView;
 
-                int Count_Student = DATA_Temp2.RowCount - 1; if (CB_Student.SelectedIndex !=0) Count_Student = 1;
+                int Count_Student = DATA_Temp2.RowCount - 1; if (CB_Student.SelectedIndex != 0) Count_Student = 1;
 
                 for (int I1 = 0; I1 < Count_Student; I1++)
                 {
@@ -158,10 +159,18 @@ namespace Attendance_Report
         {
             if (Date <= DateTime.Now & DateTime.Now <= Date.AddDays(7)) switch (AccessRights)
                 {
+                    case "Teacher":
+                        {
+                            ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog();
+                            if (ValueEditor.Link.Name == "Subject" & ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] != '1') ValueEditor.Link.Paint += Label_Paint;
+                            if (ValueEditor.Link.Name == "Subject0") UpdateData();
+                        }
+                        break;
+
                     case "Elder":
                         {
                             ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog(); if (ValueEditor.Link.Name == "Weekend") UpdateData();
-                            if (ValueEditor.Link.Name == "Subject") if (ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] == '1') UpdateData(); else ValueEditor.Link.Paint += Label_Paint;
+                            if (ValueEditor.Link.Name == "Subject1") UpdateData(); else ValueEditor.Link.Paint += Label_Paint;
                         }
                         break;
                 }
@@ -191,29 +200,29 @@ namespace Attendance_Report
                 default: break;
             }
 
-            if (T == true) CB_Date.Items.Add(ND.Day + "." + ND.Month + "." + ND.Year + " - " + ND.AddDays(5).Day + "." + ND.AddDays(5).Month + "." + ND.AddDays(5).Year);  else Date = ND;
+            if (T == true) CB_Date.Items.Add(ND.Day + "." + ND.Month + "." + ND.Year + " - " + ND.AddDays(5).Day + "." + ND.AddDays(5).Month + "." + ND.AddDays(5).Year); else Date = ND;
         }
 
-        private void CB_Date_SelectedIndexChanged(object sender, EventArgs e)  
-        {  ConvertToDateTime(CB_Date.Items[CB_Date.SelectedIndex].ToString(), false); if (CB_Student.SelectedIndex != 0) CB_Student.SelectedIndex = 0; else CB_Student_SelectedIndexChanged(sender, e); }
+        private void CB_Date_SelectedIndexChanged(object sender, EventArgs e)
+        { ConvertToDateTime(CB_Date.Items[CB_Date.SelectedIndex].ToString(), false); if (CB_Student.SelectedIndex != 0) CB_Student.SelectedIndex = 0; else CB_Student_SelectedIndexChanged(sender, e); }
 
         private void CB_Group_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string SQL; SqlDataAdapter data; DataSet Set; CB_Date.Items.Clear();  CB_Student.Items.Clear();
+            string SQL; SqlDataAdapter data; DataSet Set; CB_Date.Items.Clear(); CB_Student.Items.Clear();
 
             // Заполнение списка студентов
             if (AccessRights == "Teacher")
             {
                 SQL = $"SELECT [Students].[Student], [FIO].[Surname], [FIO].[Name], [FIO].[MiddleName] FROM [Attendance_Report].[dbo].[FIO], [Attendance_Report].[dbo].[Students] WHERE [FIO].[ID] = [Students].[Student] AND [Students].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}')";
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
-                CB_Student.Items.Add("Все"); for (int I1 = 0; I1 < DATA_Temp1.RowCount-1; I1++) CB_Student.Items.Add($"{DATA_Temp1.Rows[I1].Cells[1].Value} {DATA_Temp1.Rows[I1].Cells[2].Value} {DATA_Temp1.Rows[I1].Cells[3].Value}");
+                CB_Student.Items.Add("Все"); for (int I1 = 0; I1 < DATA_Temp1.RowCount - 1; I1++) CB_Student.Items.Add($"{DATA_Temp1.Rows[I1].Cells[1].Value} {DATA_Temp1.Rows[I1].Cells[2].Value} {DATA_Temp1.Rows[I1].Cells[3].Value}");
             }
 
             if (AccessRights == "Student" | AccessRights == "Elder") { CB_Student.Items.Add("Все"); CB_Student.Items.Add("Я"); }
 
             // Получение данных о зафиксированных датах
             SQL = $"SELECT DISTINCT [FixedWeeks].[DateStartFixed],[FixedWeeks].[DateEndFixed] FROM [Attendance_Report].[dbo].[FixedWeeks] WHERE [FixedWeeks].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}')";
-            data = new SqlDataAdapter(SQL, Authorization.ConnectString);Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
+            data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
             // Заполнение списка дат
             ConvertToDateTime(DateTime.Now.Date.ToString(), true); ConvertToDateTime(DateTime.Now.Date.ToString(), false); for (int I1 = 0; I1 < DATA_Temp1.RowCount - 1; I1++) if ((DateTime)DATA_Temp1.Rows[I1].Cells[0].Value != Date) ConvertToDateTime(DATA_Temp1.Rows[I1].Cells[0].Value.ToString(), true); CB_Date.SelectedIndex = 0;
@@ -224,7 +233,7 @@ namespace Attendance_Report
             switch (CB_Student.Items[CB_Student.SelectedIndex])
             {
                 case "Все": { ChRequest_FROM = $""; ChRequest_WHERE = $""; } break;
-                case "Я": { ChRequest_FROM = $", [Attendance_Report].[dbo].[Students], [Attendance_Report].[dbo].[AccessRights]"; ChRequest_WHERE = $" AND [AccessRights].[Login] = '{Login}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [AttendanceTracking].Student = [Students].[Student]"; } break;
+                case "Я": { ChRequest_FROM = $", [Attendance_Report].[dbo].[AccessRights]"; ChRequest_WHERE = $" AND [AccessRights].[Login] = '{Login}' AND [Students].[ID] = [AccessRights].[UniqueData] AND [AttendanceTracking].Student = [Students].[Student]"; } break;
                 default: { string[] FIO = CB_Student.Items[CB_Student.SelectedIndex].ToString().Split(' '); ChRequest_FROM = $""; ChRequest_WHERE = $" AND [AttendanceTracking].[Student] = (SELECT [FIO].[ID] FROM [Attendance_Report].[dbo].[FIO] WHERE [FIO].[Surname] = '{FIO[0]}' AND [FIO].[Name] = '{FIO[1]}' AND [FIO].[MiddleName] = '{FIO[2]}')"; } break;
             }
 
@@ -299,14 +308,5 @@ namespace Attendance_Report
         }
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData(); MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information); Application.OpenForms["Authorization"].Show(); }
-
-        // Временно
-        private void pictureBox1_Click(object sender, EventArgs e) { if (DATA_Temp1.Visible == false) DATA_Temp1.Visible = true; else DATA_Temp1.Visible = false; }
-
-        private void pictureBox2_Click(object sender, EventArgs e) { if (DATA_Temp2.Visible == false) DATA_Temp2.Visible = true; else DATA_Temp2.Visible = false; }
-
-        private void pictureBox3_Click(object sender, EventArgs e) { if (DATA_Temp3.Visible == false) DATA_Temp3.Visible = true; else DATA_Temp3.Visible = false; }
-
-        private void pictureBox4_Click(object sender, EventArgs e) => SaveData();
-    }
+}
 }

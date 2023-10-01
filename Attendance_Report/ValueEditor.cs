@@ -16,7 +16,7 @@ namespace Attendance_Report
     {
         public ValueEditor() => InitializeComponent();
 
-        public static Label Link;
+        public static Label Link; public static string Tea;
 
         private void ValueEditor_Load(object sender, EventArgs e)
         {
@@ -24,15 +24,32 @@ namespace Attendance_Report
             Table.BringToFront(); Table.Controls.Clear(); Table.AutoScroll = false; Table.AutoScroll = true; string[] AM = { "H", "Отсутствовал", "О", "Опоздал", "", "Присутствовал" };
             Point NLocation = Link.PointToScreen(Point.Empty); Location = new Point(NLocation.X + Link.Width / 4 * 3, NLocation.Y + Link.Height);
 
+            if (Main.AccessRights == "Teacher")
+            {
+                string SQL = $"SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects], [Attendance_Report].[dbo].[AccessRights] WHERE [AccessRights].[Login] = '{Main.Login}' AND [Subjects].[ID] = [AccessRights].[UniqueData]";
+                SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
+                Tea = DATA.Rows[0].Cells[0].Value.ToString();
+            }
+
             string[] Data = Link.Tag.ToString().Split('_'); switch (Data[0])
             {
                 case "Sub":
                     {
-                        Height = 362; Panel Panel_Week = new Panel { Size = new Size(Table.Width - 6, 110) };
+                        string SQL = ""; if (Main.AccessRights == "Elder") SQL = $"SELECT [Subject] FROM [Attendance_Report].[dbo].[Subjects]";
+                        else SQL = $"SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects], [Attendance_Report].[dbo].[AccessRights] WHERE [AccessRights].[Login] = '{Main.Login}' AND [Subjects].[ID] = [AccessRights].[UniqueData]";
+                        SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
+
+                        if (Main.AccessRights == "Teacher") { Height = 322; if (Data.Length == 5) { if (Main.AccessRights == "Teacher" & Data[4] != Tea) Close(); } else Height = 246; }
+
+                        if (Main.AccessRights == "Elder")
                         {
-                            Label Lab1 = new Label { Size = new Size(Panel_Week.Width, Panel_Week.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Установить выходной" };
-                            { Lab1.Tag = "ADD"; Lab1.Click += Label_Click; Panel_Week.Controls.Add(Lab1); }
-                            Table.Controls.Add(Panel_Week);
+                            Height = 428; Panel Panel_Week = new Panel { Size = new Size(Table.Width - 6, 100) };
+                            {
+                                Label Lab1 = new Label { Size = new Size(Panel_Week.Width, Panel_Week.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Установить\nвыходной" };
+                                { Lab1.Tag = "ADD"; Lab1.Click += Label_Click; Panel_Week.Controls.Add(Lab1); Table.Controls.Add(Panel_Week); }
+                            }
+
+                            if (Data.Length == 4) Height = 352;
                         }
 
                         Panel Panel_Main = new Panel { Name = "Main", Size = new Size(Table.Width - 6, 200), BorderStyle = BorderStyle.FixedSingle };
@@ -42,20 +59,28 @@ namespace Attendance_Report
 
                             ComboBox CB = new ComboBox { Name = "TB_Class", Size = new Size(Table.Width - 26, 40), Anchor = AnchorStyles.None, Font = new Font("Times New Roman", 14), Left = 12, Top = 96 };
 
-                            string SQL = $"SELECT [Subject] FROM [Attendance_Report].[dbo].[Subjects]";
-                            SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
-
                             for (int i = 0; i < DATA.RowCount - 1; i++) CB.Items.Add(DATA.Rows[i].Cells[0].Value); Panel_Main.Controls.Add(CB);
+                            if (Main.AccessRights == "Teacher") { CB.Text = DATA.Rows[0].Cells[0].Value.ToString(); CB.Enabled = false; }
 
                             Label End = new Label { Size = new Size(150, 40), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12), Text = "Установить предмет", Left = Panel_Main.Width / 2 - 75, Top = 143 };
-                            { End.Tag = "Class"; End.Click += Label_Click; Panel_Main.Controls.Add(End); }
-                            Table.Controls.Add(Panel_Main);
+                            { End.Tag = "Class"; End.Click += Label_Click; Panel_Main.Controls.Add(End); Table.Controls.Add(Panel_Main); }
                         }
+
+                        if (Data.Length == 5) if (Main.AccessRights == "Elder" | (Main.AccessRights == "Teacher" & Data[4] == Tea))
+                            {
+                                Panel Panel_Week = new Panel { Size = new Size(Table.Width - 6, 70) };
+                                {
+                                    Label Lab1 = new Label { Size = new Size(Panel_Week.Width, Panel_Week.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14), Text = "Убрать предмет" };
+                                    { Lab1.Tag = "REMOVE"; Lab1.Click += Label_Click; Panel_Week.Controls.Add(Lab1); Table.Controls.Add(Panel_Week); }
+                                }
+                            }
                     }
                     break;
 
                 case "Week":
                     {
+                        if (Main.AccessRights == "Teacher") Close();
+
                         string SQL = $"SELECT DISTINCT [Weekend].[Date],[Weekend].[Group] FROM [Attendance_Report].[dbo].[Weekend], [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[2]}' AND [Weekend].[Group] = [Groups].[ID] AND [Weekend].[Date] = '{Data[1]}'";
                         SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
                         if (DATA.RowCount - 1 > 0)
@@ -73,6 +98,10 @@ namespace Attendance_Report
 
                 case "AM":
                     {
+                        string SQL = $"SELECT (SELECT [Subjects].[Subject] FROM [Attendance_Report].[dbo].[Subjects] WHERE [Subjects].[ID] = [Lessons].[Subject]) AS [Subject]  FROM [Attendance_Report].[dbo].[Lessons] WHERE [Lessons].[Date] = '{Data[2]}' AND [Lessons].[ClassNumber] = '{Data[3]}' AND [Lessons].[Group] = (SELECT [Students].[Group] FROM [Attendance_Report].[dbo].[Students] WHERE [Students].[Student] = '{Data[1]}')";
+                        SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
+                        if (Main.AccessRights == "Teacher") if (DATA.RowCount - 1 > 0) { if (DATA.Rows[0].Cells[0].Value.ToString() != Tea) Close(); } else Close();
+
                         Height = 300; for (int I1 = 0; I1 < 3; I1++)
                         {
                             Panel Panel_Main = new Panel { Size = new Size(Table.Width - 8, (Table.Height - 21) / 3) };
@@ -106,6 +135,16 @@ namespace Attendance_Report
 
                             Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))"; Link.Name = "Weekend";
                             SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
+                        }
+
+                        if (Lab.Tag.ToString() == "REMOVE")
+                        {
+                            Link.Tag = Data[0] + "_" + Data[1] + "_" + Data[2] + "_" + Data[3]; Link.Text = ""; Link.Name = "Subject0";
+                            string Request = $"DELETE FROM [Attendance_Report].[dbo].[Lessons] WHERE [Lessons].[Date] = '{Data[2]}' AND [Lessons].[Group] = (SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}') AND [Lessons].[ClassNumber] = '{Data[3]}'";
+                            SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
+                            Request = $"DELETE FROM [Attendance_Report].[dbo].[AttendanceTracking] WHERE [AttendanceTracking].[Date] = '{Data[2]}' AND '{Data[1]}' = (SELECT [Groups].[Group] FROM [Attendance_Report].[dbo].[Groups]" +
+                                $"WHERE [Groups].[ID] = (SELECT [Students].[Group] FROM [Attendance_Report].[dbo].[Students] WHERE [Students].[Student] = [AttendanceTracking].[Student])) AND [AttendanceTracking].[ClassNumber] = '{Data[3]}'";
+                            SQL_Connection = new SqlConnection(Authorization.ConnectString); SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                         }
 
                         if (Lab.Tag.ToString() == "Class")
