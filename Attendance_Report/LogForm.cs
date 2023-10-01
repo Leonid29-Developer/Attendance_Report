@@ -14,8 +14,8 @@ namespace Attendance_Report
     {
         public LogForm() => InitializeComponent();
 
-        public static DataGridView DG;
+        public DataGridView DG;
 
-        private void LogForm_Load(object sender, EventArgs e) => dataGridView1 = DG;
+        private void LogForm_Load(object sender, EventArgs e) => DG = dataGridView1;
     }
 }

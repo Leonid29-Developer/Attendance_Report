@@ -24,11 +24,12 @@ namespace Attendance_Report
             if (TB_Login.Text != "")
             {
                 string SQL = $"SELECT * FROM [Attendance_Report].[dbo].[AccessRights] WHERE Login = '{TB_Login.Text}';"; // SQL-запрос
-                SqlDataAdapter data = new SqlDataAdapter(SQL, ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[AccessRights]"); DATA.DataSource = Set.Tables["[AccessRights]"].DefaultView;
+                SqlDataAdapter data = new SqlDataAdapter(SQL, ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA.DataSource = Set.Tables["[]"].DefaultView;
                 if (TB_Password.Text == DATA.Rows[0].Cells[1].Value.ToString())
                 {
                     switch (DATA.Rows[0].Cells[2].Value.ToString())
                     {
+                        case "B2": { Main.AccessRights = "Teacher"; } break;
                         case "C3": { Main.AccessRights = "Elder"; } break;
                         case "D4": { Main.AccessRights = "Student"; } break;
                     }
@@ -45,5 +46,6 @@ namespace Attendance_Report
         // Временно
         private void pictureBox1_Click(object sender, EventArgs e) { TB_Login.Text = "SharpGlove"; TB_Password.Text = "SG57"; }
         private void pictureBox2_Click(object sender, EventArgs e) { TB_Login.Text = "YoungHouse"; TB_Password.Text = "YH43"; }
+        private void pictureBox3_Click(object sender, EventArgs e) { TB_Login.Text = "RoundBrass"; TB_Password.Text = "RB46"; }
     }
 }

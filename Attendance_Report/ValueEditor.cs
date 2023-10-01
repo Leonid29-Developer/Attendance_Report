@@ -28,8 +28,6 @@ namespace Attendance_Report
             {
                 case "Sub":
                     {
-                        MessageBox.Show(Link.Tag.ToString());
-
                         Height = 362; Panel Panel_Week = new Panel { Size = new Size(Table.Width - 6, 110) };
                         {
                             Label Lab1 = new Label { Size = new Size(Panel_Week.Width, Panel_Week.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Установить выходной" };

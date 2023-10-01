@@ -62,6 +62,7 @@
             this.CB_Group.Size = new System.Drawing.Size(174, 31);
             this.CB_Group.TabIndex = 0;
             this.CB_Group.Text = "Группа";
+            this.CB_Group.SelectedIndexChanged += new System.EventHandler(this.CB_Group_SelectedIndexChanged);
             // 
             // CB_Date
             // 
