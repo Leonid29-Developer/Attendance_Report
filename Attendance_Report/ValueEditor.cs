@@ -88,8 +88,7 @@ namespace Attendance_Report
                             Height = 120; Panel Panel_Main = new Panel { Size = new Size(Table.Width - 6, Table.Height - 6) };
                             {
                                 Label Lab1 = new Label { Size = new Size(Panel_Main.Width, Panel_Main.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Убрать выходной" };
-                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); }
-                                Table.Controls.Add(Panel_Main);
+                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); Table.Controls.Add(Panel_Main);}
                             }
                         }
                         else Close();
@@ -110,8 +109,7 @@ namespace Attendance_Report
                                 { Lab1.Click += Label_Click; Lab1.Tag = I1 + 1; Panel_Main.Controls.Add(Lab1); }
 
                                 Label Lab2 = new Label { Size = new Size(Panel_Main.Width / 4 * 3, Panel_Main.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14), Text = AM[I1 * 2 + 1], Left = Panel_Main.Width / 4 };
-                                { Lab2.Click += Label_Click; Lab2.Tag = I1 + 1; Panel_Main.Controls.Add(Lab2); }
-                                Table.Controls.Add(Panel_Main);
+                                { Lab2.Click += Label_Click; Lab2.Tag = I1 + 1; Panel_Main.Controls.Add(Lab2); Table.Controls.Add(Panel_Main);}
                             }
                         }
                     }

@@ -28,18 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.CB_Group = new System.Windows.Forms.ComboBox();
             this.CB_Date = new System.Windows.Forms.ComboBox();
             this.CB_Student = new System.Windows.Forms.ComboBox();
-            this.DATA_Temp1 = new System.Windows.Forms.DataGridView();
-            this.DATA_Temp2 = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.Table = new System.Windows.Forms.TableLayoutPanel();
+            this.DATA_Temp2 = new System.Windows.Forms.DataGridView();
+            this.DATA_Temp1 = new System.Windows.Forms.DataGridView();
             this.DATA_Temp3 = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp2)).BeginInit();
+            this.PrintButton = new System.Windows.Forms.PictureBox();
+            this.PrintDocument_Report = new System.Drawing.Printing.PrintDocument();
+            this.PreviewDialog_Report = new System.Windows.Forms.PrintPreviewDialog();
+            this.Dialog_Report = new System.Windows.Forms.PrintDialog();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PrintButton)).BeginInit();
             this.SuspendLayout();
             // 
             // CB_Group
@@ -79,24 +85,6 @@
             this.CB_Student.Text = "Студент";
             this.CB_Student.SelectedIndexChanged += new System.EventHandler(this.CB_Student_SelectedIndexChanged);
             // 
-            // DATA_Temp1
-            // 
-            this.DATA_Temp1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DATA_Temp1.Location = new System.Drawing.Point(12, 565);
-            this.DATA_Temp1.Name = "DATA_Temp1";
-            this.DATA_Temp1.Size = new System.Drawing.Size(1305, 200);
-            this.DATA_Temp1.TabIndex = 3;
-            this.DATA_Temp1.Visible = false;
-            // 
-            // DATA_Temp2
-            // 
-            this.DATA_Temp2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DATA_Temp2.Location = new System.Drawing.Point(12, 565);
-            this.DATA_Temp2.Name = "DATA_Temp2";
-            this.DATA_Temp2.Size = new System.Drawing.Size(1305, 200);
-            this.DATA_Temp2.TabIndex = 4;
-            this.DATA_Temp2.Visible = false;
-            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -107,7 +95,7 @@
             this.panel1.Location = new System.Drawing.Point(19, 70);
             this.panel1.Margin = new System.Windows.Forms.Padding(10);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1291, 688);
+            this.panel1.Size = new System.Drawing.Size(1291, 852);
             this.panel1.TabIndex = 5;
             // 
             // Table
@@ -120,8 +108,26 @@
             this.Table.Name = "Table";
             this.Table.RowCount = 1;
             this.Table.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.Table.Size = new System.Drawing.Size(1289, 686);
+            this.Table.Size = new System.Drawing.Size(1289, 850);
             this.Table.TabIndex = 0;
+            // 
+            // DATA_Temp2
+            // 
+            this.DATA_Temp2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DATA_Temp2.Location = new System.Drawing.Point(12, 565);
+            this.DATA_Temp2.Name = "DATA_Temp2";
+            this.DATA_Temp2.Size = new System.Drawing.Size(1305, 200);
+            this.DATA_Temp2.TabIndex = 4;
+            this.DATA_Temp2.Visible = false;
+            // 
+            // DATA_Temp1
+            // 
+            this.DATA_Temp1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DATA_Temp1.Location = new System.Drawing.Point(12, 565);
+            this.DATA_Temp1.Name = "DATA_Temp1";
+            this.DATA_Temp1.Size = new System.Drawing.Size(1305, 200);
+            this.DATA_Temp1.TabIndex = 3;
+            this.DATA_Temp1.Visible = false;
             // 
             // DATA_Temp3
             // 
@@ -132,11 +138,43 @@
             this.DATA_Temp3.TabIndex = 10;
             this.DATA_Temp3.Visible = false;
             // 
+            // PrintButton
+            // 
+            this.PrintButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PrintButton.Location = new System.Drawing.Point(828, 19);
+            this.PrintButton.Name = "PrintButton";
+            this.PrintButton.Size = new System.Drawing.Size(31, 31);
+            this.PrintButton.TabIndex = 11;
+            this.PrintButton.TabStop = false;
+            this.PrintButton.Click += new System.EventHandler(this.PrintButton_Click);
+            // 
+            // PrintDocument_Report
+            // 
+            this.PrintDocument_Report.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.PrintDocument_Report_PrintPage);
+            // 
+            // PreviewDialog_Report
+            // 
+            this.PreviewDialog_Report.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.PreviewDialog_Report.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.PreviewDialog_Report.ClientSize = new System.Drawing.Size(400, 300);
+            this.PreviewDialog_Report.Document = this.PrintDocument_Report;
+            this.PreviewDialog_Report.Enabled = true;
+            this.PreviewDialog_Report.Icon = ((System.Drawing.Icon)(resources.GetObject("PreviewDialog_Report.Icon")));
+            this.PreviewDialog_Report.Name = "printPreviewDialog1";
+            this.PreviewDialog_Report.Visible = false;
+            // 
+            // Dialog_Report
+            // 
+            this.Dialog_Report.Document = this.PrintDocument_Report;
+            this.Dialog_Report.UseEXDialog = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1329, 777);
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(1329, 941);
+            this.Controls.Add(this.PrintButton);
             this.Controls.Add(this.DATA_Temp3);
             this.Controls.Add(this.DATA_Temp1);
             this.Controls.Add(this.DATA_Temp2);
@@ -146,14 +184,19 @@
             this.Controls.Add(this.CB_Group);
             this.Font = new System.Drawing.Font("Times New Roman", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Main";
+            this.ShowIcon = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Рапортичка";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp2)).EndInit();
             this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PrintButton)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -163,10 +206,14 @@
         private System.Windows.Forms.ComboBox CB_Group;
         private System.Windows.Forms.ComboBox CB_Date;
         private System.Windows.Forms.ComboBox CB_Student;
-        private System.Windows.Forms.DataGridView DATA_Temp1;
-        private System.Windows.Forms.DataGridView DATA_Temp2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TableLayoutPanel Table;
+        private System.Windows.Forms.DataGridView DATA_Temp2;
+        private System.Windows.Forms.DataGridView DATA_Temp1;
         private System.Windows.Forms.DataGridView DATA_Temp3;
+        private System.Windows.Forms.PictureBox PrintButton;
+        private System.Drawing.Printing.PrintDocument PrintDocument_Report;
+        private System.Windows.Forms.PrintPreviewDialog PreviewDialog_Report;
+        private System.Windows.Forms.PrintDialog Dialog_Report;
     }
 }

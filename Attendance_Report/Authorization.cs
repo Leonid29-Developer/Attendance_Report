@@ -29,6 +29,7 @@ namespace Attendance_Report
                 {
                     switch (DATA.Rows[0].Cells[2].Value.ToString())
                     {
+                        case "A1": { Main.AccessRights = "Admin"; } break;
                         case "B2": { Main.AccessRights = "Teacher"; } break;
                         case "C3": { Main.AccessRights = "Elder"; } break;
                         case "D4": { Main.AccessRights = "Student"; } break;
@@ -38,14 +39,13 @@ namespace Attendance_Report
                 }
                 else T = false;
             }
-            else T = false;
-
-            if (T == false) MessageBox.Show("Неверные данные", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else T = false; if (T == false) MessageBox.Show("Неверные данные", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         // Временно
         private void pictureBox1_Click(object sender, EventArgs e) { TB_Login.Text = "SharpGlove"; TB_Password.Text = "SG57"; }
         private void pictureBox2_Click(object sender, EventArgs e) { TB_Login.Text = "YoungHouse"; TB_Password.Text = "YH43"; }
         private void pictureBox3_Click(object sender, EventArgs e) { TB_Login.Text = "RoundBrass"; TB_Password.Text = "RB46"; }
+        private void pictureBox4_Click(object sender, EventArgs e) { TB_Login.Text = "GreatNail"; TB_Password.Text = "GN88"; }
     }
 }

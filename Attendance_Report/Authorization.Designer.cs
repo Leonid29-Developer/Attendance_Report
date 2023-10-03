@@ -124,6 +124,7 @@
             this.pictureBox4.Size = new System.Drawing.Size(32, 32);
             this.pictureBox4.TabIndex = 8;
             this.pictureBox4.TabStop = false;
+            this.pictureBox4.Click += new System.EventHandler(this.pictureBox4_Click);
             // 
             // pictureBox2
             // 
@@ -146,7 +147,7 @@
             // Button_Input
             // 
             this.Button_Input.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.Button_Input.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.Button_Input.BackColor = System.Drawing.Color.LightGray;
             this.Button_Input.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Button_Input.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Button_Input.Location = new System.Drawing.Point(78, 350);
@@ -161,6 +162,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(344, 450);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.pictureBox2);
@@ -173,7 +175,10 @@
             this.Controls.Add(this.TB_Login);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Button_Input);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Authorization";
+            this.ShowIcon = false;
             ((System.ComponentModel.ISupportInitialize)(this.DATA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();

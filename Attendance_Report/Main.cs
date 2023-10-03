@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -22,16 +23,13 @@ namespace Attendance_Report
     {
         public Main() => InitializeComponent(); //LogForm L = new LogForm(); L.Show(); L.DG.DataSource = Set.Tables["[]"].DefaultView; 
 
-        public static string Login { get; set; }
-        public static string AccessRights { get; set; }
-
-        private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date;
+        public static string Login { get; set; } public static string AccessRights { get; set; } private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date; Bitmap MemoryImage;
 
         private void Main_Load(object sender, EventArgs e)
         {
             string SQL; SqlDataAdapter data; DataSet Set;
 
-            if (AccessRights == "Teacher")
+            if (AccessRights == "Teacher" | AccessRights == "Admin")
             {
                 // Получение списка групп
                 SQL = $"SELECT [Group] FROM [Attendance_Report].[dbo].[Groups]";
@@ -133,9 +131,7 @@ namespace Attendance_Report
                             SQL = $"SELECT [FIO].[Surname] + ' ' + [FIO].[Name]+ ' ' + [FIO].[MiddleName] AS [Student FIO] FROM [Attendance_Report].[dbo].[FIO] WHERE [FIO].[ID] = '{DATA_Temp1.Rows[I1 * Fixed_Count].Cells[1].Value}'";
                             data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp2.DataSource = Set.Tables["[]"].DefaultView;
 
-                            Lab_Name.Text = (I1 + 1) + ". " + DATA_Temp2.Rows[0].Cells[0].Value.ToString();
-
-                            MainPal.Controls.Add(Lab_Name);
+                            Lab_Name.Text = (I1 + 1) + ". " + DATA_Temp2.Rows[0].Cells[0].Value.ToString(); MainPal.Controls.Add(Lab_Name);
                         }
 
                         for (int I2 = 0, I4 = 0, I5 = 0; I2 < 6; I2++) for (int I3 = 0; I3 < 4; I3++, I4++)
@@ -211,7 +207,7 @@ namespace Attendance_Report
             string SQL; SqlDataAdapter data; DataSet Set; CB_Date.Items.Clear(); CB_Student.Items.Clear();
 
             // Заполнение списка студентов
-            if (AccessRights == "Teacher")
+            if (AccessRights == "Teacher" | AccessRights == "Admin")
             {
                 SQL = $"SELECT [Students].[Student], [FIO].[Surname], [FIO].[Name], [FIO].[MiddleName] FROM [Attendance_Report].[dbo].[FIO], [Attendance_Report].[dbo].[Students] WHERE [FIO].[ID] = [Students].[Student] AND [Students].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}')";
                 data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
@@ -221,7 +217,7 @@ namespace Attendance_Report
             if (AccessRights == "Student" | AccessRights == "Elder") { CB_Student.Items.Add("Все"); CB_Student.Items.Add("Я"); }
 
             // Получение данных о зафиксированных датах
-            SQL = $"SELECT DISTINCT [FixedWeeks].[DateStartFixed],[FixedWeeks].[DateEndFixed] FROM [Attendance_Report].[dbo].[FixedWeeks] WHERE [FixedWeeks].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}')";
+            SQL = $"SELECT DISTINCT [FixedWeeks].[DateStartFixed],[FixedWeeks].[DateEndFixed] FROM [Attendance_Report].[dbo].[FixedWeeks] WHERE [FixedWeeks].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}') ORDER BY [DateStartFixed] DESC";
             data = new SqlDataAdapter(SQL, Authorization.ConnectString); Set = new DataSet(); data.Fill(Set, "[]"); DATA_Temp1.DataSource = Set.Tables["[]"].DefaultView;
 
             // Заполнение списка дат
@@ -307,6 +303,15 @@ namespace Attendance_Report
             }
         }
 
+        private void PrintButton_Click(object sender, EventArgs e)
+        {
+            PrintDocument_Report.DefaultPageSettings.Landscape = true; Graphics myGraphics = CreateGraphics(); MemoryImage = new Bitmap(Size.Width, Size.Height, myGraphics);
+            Graphics memoryGraphics = Graphics.FromImage(MemoryImage); memoryGraphics.CopyFromScreen(new Point(Location.X + 8, Location.Y + 1), new Point(0, -28), new Size(Size.Width - 16, Size.Height - 9));
+            if (Dialog_Report.ShowDialog() == DialogResult.OK) if (PreviewDialog_Report.ShowDialog() == DialogResult.OK) Dialog_Report.Document.Print();
+        }
+
+        private void PrintDocument_Report_PrintPage(object sender, PrintPageEventArgs e) => e.Graphics.DrawImage(MemoryImage, new Rectangle(-10, -10, MemoryImage.Width-160, MemoryImage.Height-118));
+
         private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData(); MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information); Application.OpenForms["Authorization"].Show(); }
-}
+    }
 }
