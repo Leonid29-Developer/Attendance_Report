@@ -25,7 +25,7 @@ namespace Attendance_Report
             {
                 string SQL = $"SELECT * FROM [Attendance_Report].[dbo].[AccessRights] WHERE Login = '{TB_Login.Text}';"; // SQL-запрос
                 SqlDataAdapter data = new SqlDataAdapter(SQL, ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA.DataSource = Set.Tables["[]"].DefaultView;
-                if (TB_Password.Text == DATA.Rows[0].Cells[1].Value.ToString())
+                if (DATA.RowCount-1>0) if (TB_Password.Text == DATA.Rows[0].Cells[1].Value.ToString())
                 {
                     switch (DATA.Rows[0].Cells[2].Value.ToString())
                     {

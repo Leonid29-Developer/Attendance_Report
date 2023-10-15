@@ -23,7 +23,9 @@ namespace Attendance_Report
     {
         public Main() => InitializeComponent(); //LogForm L = new LogForm(); L.Show(); L.DG.DataSource = Set.Tables["[]"].DefaultView; 
 
-        public static string Login { get; set; } public static string AccessRights { get; set; } private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date; Bitmap MemoryImage;
+        public static string Login { get; set; }
+        public static string AccessRights { get; set; }
+        private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date; Bitmap MemoryImage;
 
         private void Main_Load(object sender, EventArgs e)
         {
@@ -88,27 +90,21 @@ namespace Attendance_Report
 
                     for (int I1 = 0, I4 = 0, I5 = 0; I1 < 6; I1++)
                     {
-                        bool T = true;
-                        if (DATA_Temp3.RowCount - I5 - 1 > 0)
-                        {
-                            if (DATA_Temp3.Rows[I5].Cells[0].Value.ToString() == Date.AddDays(I1).ToString())
+                        bool T = true; if (DATA_Temp3.RowCount - I5 - 1 > 0) if (DATA_Temp3.Rows[I5].Cells[0].Value.ToString() == Date.AddDays(I1).ToString())
                             {
                                 Label Lab_Class = new Label { Name = "Weekend", Tag = "Week_" + Date.AddDays(I1) + "_" + CB_Group.Text, AutoSize = false, Size = new Size(160, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14, FontStyle.Bold), TextAlign = ContentAlignment.MiddleCenter, Left = 300 + 160 * I1, Top = 40, Text = "Выходной" };
-                                Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class); I5++;
+                                Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class); I5++; T = false;
                             }
-                            else T = false;
+
+                        for (int I2 = 0; I2 < 4; I2++)
+                        {
+                            Label Lab_Class = new Label { Name = "Subject", Tag = "Sub_" + CB_Group.Text + "_" + Date.AddDays(I1) + "_" + (I2 + 1), AutoSize = false, Size = new Size(40, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Left = 300 + 160 * I1 + I2 * 40, Top = 40 };
+
+                            if (DATA_Temp2.RowCount - I4 - 1 > 0) if (DATA_Temp2.Rows[I4].Cells[0].Value.ToString() == Date.AddDays(I1).ToString()) if (DATA_Temp2.Rows[I4].Cells[1].Value.ToString() == (I2 + 1).ToString())
+                                    { Lab_Class.Tag += "_" + DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); Lab_Class.Text = DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); I4++; Lab_Class.Paint += Label_Paint; new System.Windows.Forms.ToolTip().SetToolTip(Lab_Class, Lab_Class.Text); }
+
+                            if (T == true) { Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class); }
                         }
-                        else T = false;
-
-                        if (T == false) for (int I2 = 0; I2 < 4; I2++)
-                            {
-                                Label Lab_Class = new Label { Name = "Subject", Tag = "Sub_" + CB_Group.Text + "_" + Date.AddDays(I1) + "_" + (I2 + 1), AutoSize = false, Size = new Size(40, 80), BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 12, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Left = 300 + 160 * I1 + I2 * 40, Top = 40 };
-
-                                if (DATA_Temp2.RowCount - I4 - 1 > 0) if (DATA_Temp2.Rows[I4].Cells[0].Value.ToString() == Date.AddDays(I1).ToString()) if (DATA_Temp2.Rows[I4].Cells[1].Value.ToString() == (I2 + 1).ToString())
-                                        { Lab_Class.Tag += "_" + DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); Lab_Class.Text = DATA_Temp2.Rows[I4].Cells[2].Value.ToString(); I4++; Lab_Class.Paint += Label_Paint; new System.Windows.Forms.ToolTip().SetToolTip(Lab_Class, Lab_Class.Text); }
-
-                                Lab_Class.Click += new EventHandler(Label_Click); Heading.Controls.Add(Lab_Class);
-                            }
                     }
 
                     Table.Controls.Add(Heading);
@@ -134,7 +130,11 @@ namespace Attendance_Report
                             Lab_Name.Text = (I1 + 1) + ". " + DATA_Temp2.Rows[0].Cells[0].Value.ToString(); MainPal.Controls.Add(Lab_Name);
                         }
 
-                        for (int I2 = 0, I4 = 0, I5 = 0; I2 < 6; I2++) for (int I3 = 0; I3 < 4; I3++, I4++)
+                        for (int I2 = 0, I4 = 0, I5 = 0, I6 = 0; I2 < 6; I2++)
+                        {
+                            bool T = true; if (DATA_Temp3.RowCount - I6 - 1 > 0) if (DATA_Temp3.Rows[I6].Cells[0].Value.ToString() == Date.AddDays(I2).ToString()) { T = false; I6++; }
+
+                            for (int I3 = 0; I3 < 4; I3++, I4++)
                             {
                                 Label Lab = new Label { Name = "AM", Text = ".", AutoSize = false, Size = new Size(40, MainPal.Height), Font = new Font("Times New Roman", 10), TextAlign = ContentAlignment.MiddleCenter, Left = 300 + 40 * I4, BorderStyle = BorderStyle.FixedSingle };
                                 Lab.Click += new EventHandler(Label_Click); Lab.Tag = "AM_" + DATA_Temp1.Rows[I1 * Fixed_Count].Cells[1].Value + "_" + Date.AddDays(I2) + "_" + (I3 + 1);
@@ -142,8 +142,9 @@ namespace Attendance_Report
                                 if (Fixed_Count - I5 > 0) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[2].Value.ToString() == Date.AddDays(I2).ToString()) if (DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[3].Value.ToString() == (I3 + 1).ToString())
                                         { Lab.Font = new Font("Times New Roman", 10); Lab.Text = AttendanceMarks(DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value.ToString()); Lab.Tag += "_" + DATA_Temp1.Rows[I1 * Fixed_Count + I5].Cells[4].Value; I5++; }
 
-                                MainPal.Controls.Add(Lab);
+                                if (T == false) Lab.Text = "."; MainPal.Controls.Add(Lab);
                             }
+                        }
 
                         Table.Controls.Add(MainPal);
                     }
@@ -153,22 +154,10 @@ namespace Attendance_Report
 
         private void Label_Click(object sender, EventArgs e)
         {
-            if (Date <= DateTime.Now & DateTime.Now <= Date.AddDays(7)) switch (AccessRights)
+            if (Date <= DateTime.Now & DateTime.Now <= Date.AddDays(7)) if (AccessRights == "Teacher" | AccessRights == "Elder")
                 {
-                    case "Teacher":
-                        {
-                            ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog();
-                            if (ValueEditor.Link.Name == "Subject" & ValueEditor.Link.Name[ValueEditor.Link.Name.Length - 1] != '1') ValueEditor.Link.Paint += Label_Paint;
-                            if (ValueEditor.Link.Name == "Subject0") UpdateData();
-                        }
-                        break;
-
-                    case "Elder":
-                        {
-                            ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog(); if (ValueEditor.Link.Name == "Weekend") UpdateData();
-                            if (ValueEditor.Link.Name == "Subject1") UpdateData(); else ValueEditor.Link.Paint += Label_Paint;
-                        }
-                        break;
+                    ValueEditor.Link = (Label)sender; new ValueEditor().ShowDialog(); if (ValueEditor.Link.Name == "Weekend") UpdateData();
+                    if (ValueEditor.Link.Name == "Subject" | ValueEditor.Link.Name == "Subject0") ValueEditor.Link.Paint += Label_Paint;
                 }
 
             SaveData();
@@ -310,7 +299,7 @@ namespace Attendance_Report
             if (Dialog_Report.ShowDialog() == DialogResult.OK) if (PreviewDialog_Report.ShowDialog() == DialogResult.OK) Dialog_Report.Document.Print();
         }
 
-        private void PrintDocument_Report_PrintPage(object sender, PrintPageEventArgs e) => e.Graphics.DrawImage(MemoryImage, new Rectangle(-10, -10, MemoryImage.Width-160, MemoryImage.Height-118));
+        private void PrintDocument_Report_PrintPage(object sender, PrintPageEventArgs e) => e.Graphics.DrawImage(MemoryImage, new Rectangle(-10, -10, MemoryImage.Width - 160, MemoryImage.Height - 118));
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData(); MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information); Application.OpenForms["Authorization"].Show(); }
     }

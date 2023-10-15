@@ -126,12 +126,12 @@ namespace Attendance_Report
                     {
                         if (Lab.Tag.ToString() == "ADD")
                         {
-                            string Request, SQL = $"SELECT TOP 1 [Weekend].[ID] FROM [Attendance_Report].[dbo].[Weekend] ORDER BY [ID] DESC"; string Temp1 = ""; Link.Name = "Subject1";
+                            string Request, SQL = $"SELECT TOP 1 [Weekend].[ID] FROM [Attendance_Report].[dbo].[Weekend] ORDER BY [ID] DESC"; string Temp1 = "";
                             SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DataGridView DATA = Example_DATA; DATA.DataSource = Set.Tables["[]"].DefaultView;
                             for (int I1 = 1; I1 < DATA.Rows[0].Cells[0].Value.ToString().Length; I1++) { Temp1 += DATA.Rows[0].Cells[0].Value.ToString()[I1]; }
-                            Temp1 = "W" + (Convert.ToInt16(Temp1) + 1);
+                            Temp1 = "W" + (Convert.ToInt16(Temp1) + 1); Link.Name = "Weekend";
 
-                            Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))"; Link.Name = "Weekend";
+                            Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))"; 
                             SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                         }
 
