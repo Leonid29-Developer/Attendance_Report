@@ -21,9 +21,9 @@ namespace Attendance_Report
 {
     public partial class Main : Form
     {
-        public Main() => InitializeComponent(); //LogForm L = new LogForm(); L.Show(); L.DG.DataSource = Set.Tables["[]"].DefaultView; 
+        public Main() => InitializeComponent();
 
-        public static string Login { get; set; } 
+        public static string Login { get; set; }
         public static string AccessRights { get; set; }
 
         private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date; Bitmap MemoryImage;
@@ -32,7 +32,7 @@ namespace Attendance_Report
         {
             string SQL; SqlDataAdapter data; DataSet Set;
 
-            if (AccessRights == "Admin") PrintButton.Visible = true; else PrintButton.Visible = false;
+            if (AccessRights == "Admin") { PrintButton.Visible = true; CalculationOfAttendance.Visible = true; } else { PrintButton.Visible = false; CalculationOfAttendance.Visible = false; }
 
             if (AccessRights == "Teacher" | AccessRights == "Admin")
             {

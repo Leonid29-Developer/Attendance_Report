@@ -88,7 +88,7 @@ namespace Attendance_Report
                             Height = 120; Panel Panel_Main = new Panel { Size = new Size(Table.Width - 6, Table.Height - 6) };
                             {
                                 Label Lab1 = new Label { Size = new Size(Panel_Main.Width, Panel_Main.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 16), Text = "Убрать выходной" };
-                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); Table.Controls.Add(Panel_Main);}
+                                { Lab1.Click += Label_Click; Panel_Main.Controls.Add(Lab1); Table.Controls.Add(Panel_Main); }
                             }
                         }
                         else Close();
@@ -109,7 +109,7 @@ namespace Attendance_Report
                                 { Lab1.Click += Label_Click; Lab1.Tag = I1 + 1; Panel_Main.Controls.Add(Lab1); }
 
                                 Label Lab2 = new Label { Size = new Size(Panel_Main.Width / 4 * 3, Panel_Main.Height), TextAlign = ContentAlignment.MiddleCenter, BorderStyle = BorderStyle.FixedSingle, Font = new Font("Times New Roman", 14), Text = AM[I1 * 2 + 1], Left = Panel_Main.Width / 4 };
-                                { Lab2.Click += Label_Click; Lab2.Tag = I1 + 1; Panel_Main.Controls.Add(Lab2); Table.Controls.Add(Panel_Main);}
+                                { Lab2.Click += Label_Click; Lab2.Tag = I1 + 1; Panel_Main.Controls.Add(Lab2); Table.Controls.Add(Panel_Main); }
                             }
                         }
                     }
@@ -131,7 +131,7 @@ namespace Attendance_Report
                             for (int I1 = 1; I1 < DATA.Rows[0].Cells[0].Value.ToString().Length; I1++) { Temp1 += DATA.Rows[0].Cells[0].Value.ToString()[I1]; }
                             Temp1 = "W" + (Convert.ToInt16(Temp1) + 1); Link.Name = "Weekend";
 
-                            Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))"; 
+                            Request = $"INSERT INTO [Attendance_Report].[dbo].[Weekend]([ID],[Date],[Group]) VALUES ('{Temp1}','{Data[2]}',(SELECT [Groups].[ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Groups].[Group] = '{Data[1]}'))";
                             SqlConnection SQL_Connection = new SqlConnection(Authorization.ConnectString); SqlCommand SQL_Command; SQL_Connection.Open(); SQL_Command = SQL_Connection.CreateCommand(); SQL_Command.CommandText = Request; SQL_Command.ExecuteNonQuery(); SQL_Connection.Close();
                         }
 

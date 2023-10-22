@@ -38,7 +38,7 @@ namespace Attendance_Report
                         $"(SELECT TOP 1 COUNT([AttendanceTracking].[AttendanceMark]) FROM [Attendance_Report].[dbo].[AttendanceTracking], [Attendance_Report].[dbo].[Groups], [Attendance_Report].[dbo].[Students]" +
                         $"WHERE [AttendanceTracking].[Student] = [Students].[Student] AND [Students].[Group] = [Groups].[ID] AND [Groups].[Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}' AND [AttendanceTracking].[Date] >= '{TB_StartDate.Text}' AND [AttendanceTracking].[Date] <= '{TB_EndDate.Text}'{ChRequest_WHERE}) AS [ALL]";
                     SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA.DataSource = Set.Tables["[]"].DefaultView;
-                    
+
                     Lab_Out.Text = $"Студент {CB_AttendanceMark.Items[CB_AttendanceMark.SelectedIndex].ToString().ToLower()} {DATA.Rows[0].Cells[0].Value} раз из {DATA.Rows[0].Cells[1].Value} зафиксированных занятий (пар)";
                 }
                 else MessageBox.Show("Не все данные были введены или выбраны", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -50,8 +50,8 @@ namespace Attendance_Report
         {
             // Заполнение списка студентов
             string SQL = $"SELECT DISTINCT [Students].[Student], [FIO].[Surname], [FIO].[Name], [FIO].[MiddleName] FROM [Attendance_Report].[dbo].[FIO], [Attendance_Report].[dbo].[Students] WHERE [FIO].[ID] = [Students].[Student] AND [Students].[Group] = (SELECT [ID] FROM [Attendance_Report].[dbo].[Groups] WHERE [Group] = '{CB_Group.Items[CB_Group.SelectedIndex]}')";
-            SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString);DataSet Set = new DataSet();  data.Fill(Set, "[]"); DATA.DataSource = Set.Tables["[]"].DefaultView;
-            for (int I1 = 0; I1 < DATA.RowCount - 1; I1++) CB_Student.Items.Add($"{DATA.Rows[I1].Cells[1].Value} {DATA.Rows[I1].Cells[2].Value} {DATA.Rows[I1].Cells[3].Value}");
+            SqlDataAdapter data = new SqlDataAdapter(SQL, Authorization.ConnectString); DataSet Set = new DataSet(); data.Fill(Set, "[]"); DATA.DataSource = Set.Tables["[]"].DefaultView;
+            CB_Student.Items.Clear(); CB_Student.Text = "Студент"; for (int I1 = 0; I1 < DATA.RowCount - 1; I1++) CB_Student.Items.Add($"{DATA.Rows[I1].Cells[1].Value} {DATA.Rows[I1].Cells[2].Value} {DATA.Rows[I1].Cells[3].Value}");
         }
 
         private void CB_Student_SelectedIndexChanged(object sender, EventArgs e)
