@@ -41,6 +41,7 @@
             this.PrintDocument_Report = new System.Drawing.Printing.PrintDocument();
             this.PreviewDialog_Report = new System.Windows.Forms.PrintPreviewDialog();
             this.Dialog_Report = new System.Windows.Forms.PrintDialog();
+            this.CalculationOfAttendance = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DATA_Temp1)).BeginInit();
@@ -140,6 +141,8 @@
             // 
             // PrintButton
             // 
+            this.PrintButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("PrintButton.BackgroundImage")));
+            this.PrintButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.PrintButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.PrintButton.Location = new System.Drawing.Point(828, 19);
             this.PrintButton.Name = "PrintButton";
@@ -168,12 +171,25 @@
             this.Dialog_Report.Document = this.PrintDocument_Report;
             this.Dialog_Report.UseEXDialog = true;
             // 
+            // CalculationOfAttendance
+            // 
+            this.CalculationOfAttendance.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.CalculationOfAttendance.Font = new System.Drawing.Font("Times New Roman", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.CalculationOfAttendance.Location = new System.Drawing.Point(883, 19);
+            this.CalculationOfAttendance.Name = "CalculationOfAttendance";
+            this.CalculationOfAttendance.Size = new System.Drawing.Size(233, 31);
+            this.CalculationOfAttendance.TabIndex = 13;
+            this.CalculationOfAttendance.Text = "Расчет посещаемости";
+            this.CalculationOfAttendance.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.CalculationOfAttendance.Click += new System.EventHandler(this.CalculationOfAttendance_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1329, 941);
+            this.Controls.Add(this.CalculationOfAttendance);
             this.Controls.Add(this.PrintButton);
             this.Controls.Add(this.DATA_Temp3);
             this.Controls.Add(this.DATA_Temp1);
@@ -215,5 +231,6 @@
         private System.Drawing.Printing.PrintDocument PrintDocument_Report;
         private System.Windows.Forms.PrintPreviewDialog PreviewDialog_Report;
         private System.Windows.Forms.PrintDialog Dialog_Report;
+        private System.Windows.Forms.Label CalculationOfAttendance;
     }
 }

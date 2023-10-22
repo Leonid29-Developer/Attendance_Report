@@ -23,13 +23,16 @@ namespace Attendance_Report
     {
         public Main() => InitializeComponent(); //LogForm L = new LogForm(); L.Show(); L.DG.DataSource = Set.Tables["[]"].DefaultView; 
 
-        public static string Login { get; set; }
+        public static string Login { get; set; } 
         public static string AccessRights { get; set; }
+
         private string ChRequest_FROM, ChRequest_WHERE; private DateTime Date; Bitmap MemoryImage;
 
         private void Main_Load(object sender, EventArgs e)
         {
             string SQL; SqlDataAdapter data; DataSet Set;
+
+            if (AccessRights == "Admin") PrintButton.Visible = true; else PrintButton.Visible = false;
 
             if (AccessRights == "Teacher" | AccessRights == "Admin")
             {
@@ -300,6 +303,8 @@ namespace Attendance_Report
         }
 
         private void PrintDocument_Report_PrintPage(object sender, PrintPageEventArgs e) => e.Graphics.DrawImage(MemoryImage, new Rectangle(-10, -10, MemoryImage.Width - 160, MemoryImage.Height - 118));
+
+        private void CalculationOfAttendance_Click(object sender, EventArgs e) => new CalculationOfAttendance().ShowDialog();
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e) { SaveData(); MessageBox.Show("Успешно", "Сохранение", MessageBoxButtons.OK, MessageBoxIcon.Information); Application.OpenForms["Authorization"].Show(); }
     }
